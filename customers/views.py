@@ -11,6 +11,7 @@ from customers.serialisers import CustomerSerieliser
 def customers(request):
     #invoke serialiser which turns database object to json
     if request.method =='GET':
+
         data = Customer.objects.all()
         serialiser = CustomerSerieliser(data, many=True)
         return Response({'customers':serialiser.data})
@@ -28,6 +29,7 @@ def customer(request,id):
         return Response(status = status.HTTP_404_NOT_FOUND)
     
     if request.method == 'GET':
+        #raise Exception()
         serialiser = CustomerSerieliser(data)
         return Response({'customer':serialiser.data})
     elif request.method =='DELETE':
