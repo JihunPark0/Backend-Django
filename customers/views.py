@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from customers.serialisers import CustomerSerieliser, UserSerialiser
+from rest_framework_simplejwt.tokens import RefreshToken
 
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
@@ -50,5 +51,11 @@ def customer(request,id):
 def register(request):
     serialiser = UserSerialiser(data=request.data)
     if serialiser.is_valid():
-        serialiser.save()
-        return Response(status=status.HTTP_201_CREATED)
+        user = serialiser.save()
+        refresh = RefreshToken.for_user(user)
+        tokens = {
+            'refresh': str(refresh),
+            'access': str(refresh.access_token)
+        }
+        return Response(tokens, status=status.HTTP_201_CREATED)
+    return Response(serialiser.error, status.HTTP_400_BAD_REQUEST)
